@@ -11,7 +11,9 @@ The system consists of several specialized microservices, each responsible for a
 | **API Gateway** | `4004` | Entry point for all external requests. Handles routing and JWT validation. |
 | **Auth Service** | `4005` | Manages user authentication, registration, and JWT issuance. |
 | **Patient Service** | `4000` | Core CRUD service for patient records. Acts as a Kafka producer (patient events) and gRPC client (billing requests). |
-| **Billing Service** | `4001` | Manages patient billing accounts via gRPC server (port `9001`). 
+| **Billing Service** | `4001` | Manages patient billing accounts via gRPC server (port `9001`). |
+| **Analytics Service** | - | Kafka consumer that processes patient-related events for business intelligence. |
+| **Infrastructure** | - | AWS CDK-based infrastructure deployment to LocalStack. |
 
 ### 🛠️ Technology Stack
 
@@ -21,7 +23,9 @@ The system consists of several specialized microservices, each responsible for a
 - **Communication**:
   - **Synchronous**: REST (Spring Web) & gRPC (using `net.devh:grpc-spring-boot-starter`)
   - **Asynchronous**: Apache Kafka (Spring Kafka)
-
+- **Security**: JWT (JSON Web Tokens) with `io.jsonwebtoken`
+- **Deployment**: Docker & Kubernetes (K8s manifests included)
+- **Testing**: JUnit 5, Rest-Assured, and H2 for integration testing.
 
 ---
 
@@ -92,3 +96,33 @@ Integration tests are located in the `integration-tests` module and use **Rest-A
 ```bash
 cd integration-tests
 mvn test
+```
+
+### Sample Requests
+
+The project includes sample `.http` files for manual testing:
+- `api-requests/`: HTTP requests for REST APIs.
+- `grpc-requests/`: Sample requests for gRPC (can be used with tools like Postman or BloomRPC).
+
+---
+
+## 🏗️ Deployment (Kubernetes)
+
+Each service contains its own `deployment.yaml` and `service.yaml`.
+
+```bash
+kubectl apply -f patient-service/deployment.yaml
+kubectl apply -f patient-service/service.yaml
+# Repeat for other services
+```
+
+---
+
+## ☁️ Infrastructure (LocalStack)
+
+The `infrastructure/` directory contains AWS CDK code to deploy resources (like Load Balancers) to a LocalStack environment.
+
+```bash
+cd infrastructure
+./localstack-deploy.sh
+```
